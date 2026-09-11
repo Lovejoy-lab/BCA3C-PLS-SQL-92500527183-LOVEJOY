@@ -1,27 +1,41 @@
-/*Write a PL/SQL block to accept product name, qty and price from user and then calculate discount in Rs. based on the given (%). */
+-- PROGRAM 4:- Display top 3 highest-paid employees using Cursor FOR Loop.
+
 
 SET SERVEROUTPUT ON;
 
-DECLARE 
+CREATE TABLE EMP14
+(
+    EID NUMBER PRIMARY KEY,
+    EName VARCHAR2(30),
+    Deptno NUMBER,
+    BasicSal NUMBER
+);
 
-V_PRODUCT VARCHAR2(50);
-V_QUANTITY NUMBER;
-v_PRICE NUMBER;
-V_TOTAL NUMBER;
-V_DISCOUNT NUMBER;
-V_DISCOUNT_RS NUMBER;
+INSERT INTO EMP14 VALUES (101, 'RAHUL', 10, 30000);
+INSERT INTO EMP14 VALUES (102, 'AMIT', 20, 45000);
+INSERT INTO EMP14 VALUES (103, 'NEHA', 10, 50000);
+INSERT INTO EMP14 VALUES (104, 'RAJ', 30, 40000);
+INSERT INTO EMP14 VALUES (105, 'PRIYA', 20, 55000);
 
-BEGIN 
+COMMIT;
 
-V_PRODUCT := '&PRODUCT';
-V_QUANTITY := &QUANTITY;
-V_PRICE := &PRICE;
-V_TOTAL := V_PRICE * V_QUANTITY;
-V_DISCOUNT := &DISCOUNT;
-V_DISCOUNT_RS := (V_DISCOUNT * V_TOTAL)/100;
-
-DBMS_OUTPUT.PUT_LINE('PRICE OF YOUR ITEM IS AFTER THE DISCOUNT = RS ' || V_DISCOUNT_RS);
-
-
+BEGIN
+    FOR E IN
+    (
+        SELECT EName, BasicSal
+        FROM
+        (
+            SELECT EName, BasicSal
+            FROM EMP14
+            ORDER BY BasicSal DESC
+        )
+        WHERE ROWNUM <= 3
+    )
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(
+            'Name: ' || E.EName ||
+            '  Basic Salary: ' || E.BasicSal
+        );
+    END LOOP;
 END;
 /

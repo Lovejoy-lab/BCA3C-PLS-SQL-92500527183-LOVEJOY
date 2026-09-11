@@ -1,53 +1,42 @@
-/* Write a PL/SQL block to calculate the total, percentage and grade of student based on his/her Rollno from the RESULT table. (Create RESULT table with Rollno, Name, Sub1, Sub2, Sub3, Sub4, Sub5, Total, Per, Grade attributes with appropriate data type).  */
-
-CREATE TABLE RESULT(
-    ROLL_NO NUMBER PRIMARY KEY,
-    NAME VARCHAR2(15),
-    SUB1 NUMBER,
-    SUB2 NUMBER,
-    SUB3 NUMBER,
-    SUB4 NUMBER,
-    SUB5 NUMBER,
-    TOTAL NUMBER,
-    PER NUMBER,
-    GRADE VARCHAR2(3)
-);
-
--- INSERT INTO RESULT 
--- VALUES(101,'GAUTAM',80,75,90,85,70,NULL,NULL,NULL);
+-- PROGRAM 7:- Display records from CUSTOMER table using Explicit Cursor.
 
 SET SERVEROUTPUT ON;
 
-DECLARE 
+CREATE TABLE CUSTOMER17
+(
+    CID NUMBER PRIMARY KEY,
+    CName VARCHAR2(30),
+    City VARCHAR2(30),
+    Phone VARCHAR2(15)
+);
 
-V_ROLLNO RESULT.ROLL_NO%TYPE;
-V_TOTAL NUMBER;
-V_PER NUMBER;
-V_GRADE VARCHAR2(2);
+INSERT INTO CUSTOMER17 VALUES (1, 'RAHUL', 'AHMEDABAD', '9876543210');
+INSERT INTO CUSTOMER17 VALUES (2, 'AMIT', 'GANDHIDHAM', '9876543211');
+INSERT INTO CUSTOMER17 VALUES (3, 'NEHA', 'RAJKOT', '9876543212');
 
+COMMIT;
+
+DECLARE
+    CURSOR C1 IS
+        SELECT CID, CName, City, Phone
+        FROM CUSTOMER17;
+
+    id CUSTOMER17.CID%TYPE;
+    nm CUSTOMER17.CName%TYPE;
+    city CUSTOMER17.City%TYPE;
+    phone CUSTOMER17.Phone%TYPE;
 BEGIN
+    OPEN C1;
 
-V_ROLLNO := &ROLLNO;
+    LOOP
+        FETCH C1 INTO id, nm, city, phone;
+        EXIT WHEN C1%NOTFOUND;
 
-SELECT SUB1+SUB2+SUB3+SUB4+SUB5 INTO  V_TOTAL FROM RESULT WHERE ROLL_NO = V_ROLLNO;
+        DBMS_OUTPUT.PUT_LINE(
+            id || ' ' || nm || ' ' || city || ' ' || phone
+        );
+    END LOOP;
 
-V_PER := V_TOTAL/5;
-
-IF V_PER >= 80 THEN
-      V_GRADE := 'A';
-   ELSIF V_PER >= 60 THEN
-      V_GRADE := 'B';
-   ELSIF V_PER >= 40 THEN
-      V_GRADE := 'C';
-   ELSE
-      V_GRADE := 'F';
-   END IF;
-
-   UPDATE RESULT SET TOTAL = V_TOTAL,PER = V_PER,GRADE = V_GRADE WHERE ROLL_NO = V_ROLLNO;
-
-   DBMS_OUTPUT.PUT_LINE('TOTAL = ' || V_TOTAL);
-   DBMS_OUTPUT.PUT_LINE('PERCENTAGE = ' || V_PER);
-   DBMS_OUTPUT.PUT_LINE('GRADE = ' || V_GRADE);
-
-   END;
-   /
+    CLOSE C1;
+END;
+/

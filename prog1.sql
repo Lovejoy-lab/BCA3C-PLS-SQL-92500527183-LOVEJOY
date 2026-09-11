@@ -1,23 +1,37 @@
-/* PROG1 - Write a PL/SQL block that calculates the simple interest based on the given principal amount, rate of interest and number of years. */
-
+-- PROGRAM 1:- Update Dept 10 salary by 10% using %ROWCOUNT and Implicit Cursor.
 
 SET SERVEROUTPUT ON;
 
-DECLARE 
- 
-V_PRINCIPAL_AMT NUMBER;
-V_INTEREST NUMBER;
-V_YEARS NUMBER;
-SI NUMBER;
+CREATE TABLE EMP11
+(
+    EID NUMBER PRIMARY KEY,
+    EName VARCHAR2(30),
+    Deptno NUMBER,
+    BasicSal NUMBER
+);
 
+INSERT INTO EMP11 VALUES (101, 'RAHUL', 10, 30000);
+INSERT INTO EMP11 VALUES (102, 'AMIT', 20, 35000);
+INSERT INTO EMP11 VALUES (103, 'NEHA', 10, 32000);
+INSERT INTO EMP11 VALUES (104, 'RAJ', 30, 40000);
+
+COMMIT;
+
+DECLARE
+    cnt NUMBER;
 BEGIN
+    UPDATE EMP11
+    SET BasicSal = BasicSal * 1.10
+    WHERE Deptno = 10;
 
-V_PRINCIPAL_AMT := 400000;
-V_INTEREST := 4;
-V_YEARS := 1;
-SI := (V_PRINCIPAL_AMT* V_INTEREST* V_YEARS)/100;
+    cnt := SQL%ROWCOUNT;
 
-DBMS_OUTPUT.PUT_LINE('SIMPLE INTEREST = RS '|| SI);
+    IF cnt > 0 THEN
+        DBMS_OUTPUT.PUT_LINE(cnt || ' employee(s) salary increased by 10%.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No employees found in department 10.');
+    END IF;
 
+    COMMIT;
 END;
-/ 
+/

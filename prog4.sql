@@ -1,24 +1,41 @@
-/*4) Write a PL/SQL block which accepts measurement in feet and displays it in cm, inch and meter. */
+-- PROGRAM 4:- Display top 3 highest-paid employees using Cursor FOR Loop.
+
 
 SET SERVEROUTPUT ON;
 
-DECLARE 
+CREATE TABLE EMP14
+(
+    EID NUMBER PRIMARY KEY,
+    EName VARCHAR2(30),
+    Deptno NUMBER,
+    BasicSal NUMBER
+);
 
-V_FEET NUMBER(3);
-V_CM NUMBER(3);
-V_INCH NUMBER(3);
-V_METER NUMBER(3);
+INSERT INTO EMP14 VALUES (101, 'RAHUL', 10, 30000);
+INSERT INTO EMP14 VALUES (102, 'AMIT', 20, 45000);
+INSERT INTO EMP14 VALUES (103, 'NEHA', 10, 50000);
+INSERT INTO EMP14 VALUES (104, 'RAJ', 30, 40000);
+INSERT INTO EMP14 VALUES (105, 'PRIYA', 20, 55000);
+
+COMMIT;
 
 BEGIN
-
-V_FEET := &FEET;
-V_CM := V_FEET * 30.48;
-V_INCH := V_FEET * 12;
-V_METER := V_FEET * 0.3048;
-
-DBMS_OUTPUT.PUT_LINE('FEET IN CM :' || V_CM);
-DBMS_OUTPUT.PUT_LINE('FEET IN INCH:' || V_INCH);
-DBMS_OUTPUT.PUT_LINE('FEET IN METER:' || V_METER);
-
+    FOR E IN
+    (
+        SELECT EName, BasicSal
+        FROM
+        (
+            SELECT EName, BasicSal
+            FROM EMP14
+            ORDER BY BasicSal DESC
+        )
+        WHERE ROWNUM <= 3
+    )
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(
+            'Name: ' || E.EName ||
+            '  Basic Salary: ' || E.BasicSal
+        );
+    END LOOP;
 END;
 /

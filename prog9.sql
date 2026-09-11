@@ -1,51 +1,38 @@
--- PROGRAM 9:- Write a PL/SQL block which displays all records of Male employees working in the HR Dept from the EMP table. 
+-- PROGRAM 9:- Display records using Cursor with ORDER BY clause.
+
 
 SET SERVEROUTPUT ON;
 
-CREATE TABLE EMP9
+CREATE TABLE EMP19
 (
     EID NUMBER PRIMARY KEY,
     EName VARCHAR2(30),
     Deptno NUMBER,
-    Deptname VARCHAR2(30),
-    Gender VARCHAR2(10),
-    Age NUMBER,
     BasicSal NUMBER
 );
 
-INSERT INTO EMP9 VALUES (101, 'RAHUL', 10, 'HR', 'Male', 25, 30000);
-INSERT INTO EMP9 VALUES (102, 'AMIT', 20, 'SALES', 'Male', 28, 35000);
-INSERT INTO EMP9 VALUES (103, 'NEHA', 10, 'HR', 'Female', 24, 32000);
-INSERT INTO EMP9 VALUES (104, 'RAJ', 10, 'HR', 'Male', 30, 40000);
+INSERT INTO EMP19 VALUES (101, 'RAHUL', 10, 30000);
+INSERT INTO EMP19 VALUES (102, 'AMIT', 20, 45000);
+INSERT INTO EMP19 VALUES (103, 'NEHA', 10, 35000);
+INSERT INTO EMP19 VALUES (104, 'RAJ', 30, 40000);
 
 COMMIT;
 
 DECLARE
-    found NUMBER := 0;
-BEGIN
-    FOR e IN
-    (
-        SELECT *
-        FROM EMP9
-        WHERE Gender = 'Male'
-        AND Deptname = 'HR'
-    )
-    LOOP
-        found := 1;
+    CURSOR C1 IS
+        SELECT EID, EName, Deptno, BasicSal
+        FROM EMP19
+        ORDER BY BasicSal DESC;
 
+BEGIN
+    FOR E IN C1
+    LOOP
         DBMS_OUTPUT.PUT_LINE(
-            e.EID || ' ' ||
-            e.EName || ' ' ||
-            e.Deptno || ' ' ||
-            e.Deptname || ' ' ||
-            e.Gender || ' ' ||
-            e.Age || ' ' ||
-            e.BasicSal
+            E.EID || ' ' ||
+            E.EName || ' ' ||
+            E.Deptno || ' ' ||
+            E.BasicSal
         );
     END LOOP;
-
-    IF found = 0 THEN
-        DBMS_OUTPUT.PUT_LINE('No Male Employee Found in HR Department');
-    END IF;
 END;
 /
