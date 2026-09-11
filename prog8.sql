@@ -1,34 +1,17 @@
--- PROGRAM 8:- Display records using Cursor with LIKE operator.
-
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE CUSTOMER18
-(
-    CID NUMBER PRIMARY KEY,
-    CName VARCHAR2(30),
-    City VARCHAR2(30),
-    Phone VARCHAR2(15)
-);
-
-INSERT INTO CUSTOMER18 VALUES (1, 'RAHUL', 'AHMEDABAD', '9876543210');
-INSERT INTO CUSTOMER18 VALUES (2, 'AMIT', 'GANDHIDHAM', '9876543211');
-INSERT INTO CUSTOMER18 VALUES (3, 'RAJ', 'RAJKOT', '9876543212');
-INSERT INTO CUSTOMER18 VALUES (4, 'NEHA', 'SURAT', '9876543213');
-
-COMMIT;
-
+--PROGRAM 28: Zero Divide Exception Demonstration
+DECLARE
+    v_numerator   NUMBER := &enter_numerator;
+    v_denominator NUMBER := &enter_denominator;
+    v_result      NUMBER;
 BEGIN
-    FOR C IN
-    (
-        SELECT CID, CName, City
-        FROM CUSTOMER18
-        WHERE CName LIKE 'RA%'
-    )
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(
-            C.CID || ' ' || C.CName || ' ' || C.City
-        );
-    END LOOP;
+    v_result := v_numerator / v_denominator;
+    
+    DBMS_OUTPUT.PUT_LINE('Result of division: ' || v_result);
+
+EXCEPTION
+    WHEN ZERO_DIVIDE THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ZERO_DIVIDE exception raised. Division by zero is mathematically undefined.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /

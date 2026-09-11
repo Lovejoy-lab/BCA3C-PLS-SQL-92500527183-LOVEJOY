@@ -1,41 +1,30 @@
--- PROGRAM 4:- Display top 3 highest-paid employees using Cursor FOR Loop.
-
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE EMP14
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMP14 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMP14 VALUES (102, 'AMIT', 20, 45000);
-INSERT INTO EMP14 VALUES (103, 'NEHA', 10, 50000);
-INSERT INTO EMP14 VALUES (104, 'RAJ', 30, 40000);
-INSERT INTO EMP14 VALUES (105, 'PRIYA', 20, 55000);
-
-COMMIT;
-
+--PROGRAM 24: Employee Age Check Exception
+DECLARE
+    v_name    EMPLOYEE20.emp_name%TYPE := '&enter_employee_name';
+    v_salary  EMPLOYEE20.basic_salary%TYPE;
+    v_age     NUMBER;
+    AGE_NOT_FIFTY EXCEPTION;
 BEGIN
-    FOR E IN
-    (
-        SELECT EName, BasicSal
-        FROM
-        (
-            SELECT EName, BasicSal
-            FROM EMP14
-            ORDER BY BasicSal DESC
-        )
-        WHERE ROWNUM <= 3
-    )
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(
-            'Name: ' || E.EName ||
-            '  Basic Salary: ' || E.BasicSal
-        );
-    END LOOP;
+    SELECT basic_salary, age 
+    INTO v_salary, v_age 
+    FROM EMPLOYEE20 
+    WHERE UPPER(emp_name) = UPPER(v_name);
+
+    IF v_age = 50 THEN
+        DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_name);
+        DBMS_OUTPUT.PUT_LINE('Basic Salary : ' || v_salary);
+    ELSE
+        RAISE AGE_NOT_FIFTY;
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: The employee "' || v_name || '" does not exist.');
+    WHEN AGE_NOT_FIFTY THEN
+        DBMS_OUTPUT.PUT_LINE('Message: Employee is ' || v_age || ' years old. Salary is only displayed for 50-year-old employees.');
+    WHEN TOO_MANY_ROWS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: Multiple employees found with the name "' || v_name || '".');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /

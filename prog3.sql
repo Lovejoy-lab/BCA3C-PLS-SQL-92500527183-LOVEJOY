@@ -1,41 +1,28 @@
--- PROGRAM 4:- Display top 3 highest-paid employees using Cursor FOR Loop.
+--PROGRAM 23: Employee Check Exception
 
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE EMP14
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMP14 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMP14 VALUES (102, 'AMIT', 20, 45000);
-INSERT INTO EMP14 VALUES (103, 'NEHA', 10, 50000);
-INSERT INTO EMP14 VALUES (104, 'RAJ', 30, 40000);
-INSERT INTO EMP14 VALUES (105, 'PRIYA', 20, 55000);
-
-COMMIT;
-
+DECLARE
+   
+    v_name   EMPLOYEE20.emp_name%TYPE := '&enter_employee_name'; 
+    v_salary EMPLOYEE20.basic_salary%TYPE; 
 BEGIN
-    FOR E IN
-    (
-        SELECT EName, BasicSal
-        FROM
-        (
-            SELECT EName, BasicSal
-            FROM EMP14
-            ORDER BY BasicSal DESC
-        )
-        WHERE ROWNUM <= 3
-    )
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(
-            'Name: ' || E.EName ||
-            '  Basic Salary: ' || E.BasicSal
-        );
-    END LOOP;
+   
+    SELECT basic_salary 
+    INTO v_salary
+    FROM EMPlOYEE20
+    WHERE UPPER(emp_name) = UPPER(v_name);
+
+    DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_name);
+    DBMS_OUTPUT.PUT_LINE('Basic Salary : ' || v_salary);
+
+EXCEPTION
+   
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: The employee "' || v_name || '" does not exist in the system.');
+    
+   WHEN TOO_MANY_ROWS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: Multiple employees found with the name "' || v_name || '". Please use a unique Employee ID.');
+
+   WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /

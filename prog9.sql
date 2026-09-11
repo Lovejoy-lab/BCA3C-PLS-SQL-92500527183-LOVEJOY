@@ -1,38 +1,29 @@
--- PROGRAM 9:- Display records using Cursor with ORDER BY clause.
-
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE EMP19
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMP19 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMP19 VALUES (102, 'AMIT', 20, 45000);
-INSERT INTO EMP19 VALUES (103, 'NEHA', 10, 35000);
-INSERT INTO EMP19 VALUES (104, 'RAJ', 30, 40000);
-
-COMMIT;
-
+--PROGRAM 29: Implicit Cursor Null Commission Exception
 DECLARE
-    CURSOR C1 IS
-        SELECT EID, EName, Deptno, BasicSal
-        FROM EMP19
-        ORDER BY BasicSal DESC;
-
+    v_emp_no  EMPLOYEE20.emp_id%TYPE := &enter_employee_number;
+    v_comm    EMPLOYEE20.commission%TYPE;
+    NULL_COMMISSION EXCEPTION;
 BEGIN
-    FOR E IN C1
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(
-            E.EID || ' ' ||
-            E.EName || ' ' ||
-            E.Deptno || ' ' ||
-            E.BasicSal
-        );
-    END LOOP;
+    SELECT commission INTO v_comm 
+    FROM EMPLOYEE20 
+    WHERE emp_id = v_emp_no;
+
+    -- Checking implicit cursor attribute to confirm if a row was found
+    IF SQL%FOUND THEN
+        IF v_comm IS NULL THEN
+            RAISE NULL_COMMISSION;
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Employee ID: ' || v_emp_no);
+            DBMS_OUTPUT.PUT_LINE('Commission  : ' || v_comm);
+        END IF;
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: The Employee ID ' || v_emp_no || ' does not exist.');
+    WHEN NULL_COMMISSION THEN
+        DBMS_OUTPUT.PUT_LINE('Error: NULL_COMMISSION exception raised. No commission value is available for Employee ID ' || v_emp_no || '.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /

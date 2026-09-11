@@ -1,55 +1,29 @@
--- PROGRAM 5:- Display employee-wise salary and department-wise total gross salary using Parameterized Cursor.
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE EMP15
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMP15 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMP15 VALUES (102, 'AMIT', 10, 35000);
-INSERT INTO EMP15 VALUES (103, 'NEHA', 20, 32000);
-INSERT INTO EMP15 VALUES (104, 'RAJ', 20, 40000);
-INSERT INTO EMP15 VALUES (105, 'PRIYA', 30, 45000);
-
-COMMIT;
-
+--PROGRAM 25: Department Backup Cursor Exception
 DECLARE
-    CURSOR C1(dno NUMBER) IS
-        SELECT EName, BasicSal
-        FROM EMP15
-        WHERE Deptno = dno;
-
-    total_salary NUMBER;
+    v_dept_no    EMPLOYEE20.dept_no%TYPE := &enter_department_number;
+    v_row_count  NUMBER := 0;
+    
+    CURSOR c_emp IS 
+        SELECT * FROM EMPLOYEE20 WHERE dept_no = v_dept_no;
+        
+    NO_DEPT_FOUND EXCEPTION;
 BEGIN
-    FOR D IN
-    (
-        SELECT DISTINCT Deptno
-        FROM EMP15
-        ORDER BY Deptno
-    )
-    LOOP
-        total_salary := 0;
-
-        DBMS_OUTPUT.PUT_LINE('Department: ' || D.Deptno);
-
-        FOR E IN C1(D.Deptno)
-        LOOP
-            DBMS_OUTPUT.PUT_LINE(
-                E.EName || '  Basic Salary: ' || E.BasicSal
-            );
-
-            total_salary := total_salary + E.BasicSal;
-        END LOOP;
-
-        DBMS_OUTPUT.PUT_LINE(
-            'Department Total Gross Salary: ' || total_salary
-        );
-        DBMS_OUTPUT.PUT_LINE('-----------------------------');
+    FOR r_emp IN c_emp LOOP
+        INSERT INTO EMP_BACKUP (emp_id, emp_name, basic_salary, dept_no)
+        VALUES (r_emp.emp_id, r_emp.emp_name, r_emp.basic_salary, r_emp.dept_no);
+        v_row_count := v_row_count + 1;
     END LOOP;
+
+    IF v_row_count = 0 THEN
+        RAISE NO_DEPT_FOUND;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Success: ' || v_row_count || ' records successfully backed up for department ' || v_dept_no);
+    END IF;
+
+EXCEPTION
+    WHEN NO_DEPT_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Error: No records found for entered Department Number: ' || v_dept_no);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /

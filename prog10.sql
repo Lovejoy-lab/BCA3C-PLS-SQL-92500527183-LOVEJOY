@@ -1,39 +1,23 @@
--- PROGRAM 10:- Perform UPDATE operation on EMPLOYEE table using Implicit Cursor.
-
-
-SET SERVEROUTPUT ON;
-
-CREATE TABLE EMPLOYEE20
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMPLOYEE20 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMPLOYEE20 VALUES (102, 'AMIT', 20, 35000);
-INSERT INTO EMPLOYEE20 VALUES (103, 'NEHA', 10, 32000);
-
-COMMIT;
-
+--PROGRAM 30: SQLCODE and SQLERRM Trapping Functions
 DECLARE
-    id NUMBER;
-    new_salary NUMBER;
+    v_emp_id EMPLOYEE20.emp_id%TYPE := &enter_employee_id;
+    v_name   EMPLOYEE20.emp_name%TYPE;
+    v_code   NUMBER;
+    v_msg    VARCHAR2(250);
 BEGIN
-    id := &EID;
-    new_salary := &new_salary;
+    -- Intentional code block that can trigger errors based on input
+    SELECT emp_name INTO v_name 
+    FROM EMPLOYEE20 
+    WHERE emp_id = v_emp_id;
 
-    UPDATE EMPLOYEE20
-    SET BasicSal = new_salary
-    WHERE EID = id;
+    DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_name);
 
-    IF SQL%ROWCOUNT > 0 THEN
-        DBMS_OUTPUT.PUT_LINE('Employee salary updated successfully.');
-    ELSE
-        DBMS_OUTPUT.PUT_LINE('Employee not found.');
-    END IF;
-
-    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        v_code := SQLCODE;
+        v_msg  := SQLERRM;
+        DBMS_OUTPUT.PUT_LINE('--- Exception Trapped ---');
+        DBMS_OUTPUT.PUT_LINE('Error Code   : ' || v_code);
+        DBMS_OUTPUT.PUT_LINE('Error Message: ' || v_msg);
 END;
 /

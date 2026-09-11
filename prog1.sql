@@ -1,37 +1,22 @@
--- PROGRAM 1:- Update Dept 10 salary by 10% using %ROWCOUNT and Implicit Cursor.
+--PROGRAM 21:Zero_Divide
 
 SET SERVEROUTPUT ON;
 
-CREATE TABLE EMP11
-(
-    EID NUMBER PRIMARY KEY,
-    EName VARCHAR2(30),
-    Deptno NUMBER,
-    BasicSal NUMBER
-);
-
-INSERT INTO EMP11 VALUES (101, 'RAHUL', 10, 30000);
-INSERT INTO EMP11 VALUES (102, 'AMIT', 20, 35000);
-INSERT INTO EMP11 VALUES (103, 'NEHA', 10, 32000);
-INSERT INTO EMP11 VALUES (104, 'RAJ', 30, 40000);
-
-COMMIT;
-
 DECLARE
-    cnt NUMBER;
+    v_dividend NUMBER := 100;
+    v_divisor  NUMBER := 0;
+    v_result   NUMBER;
 BEGIN
-    UPDATE EMP11
-    SET BasicSal = BasicSal * 1.10
-    WHERE Deptno = 10;
+    v_result := v_dividend / v_divisor;
+    DBMS_OUTPUT.PUT_LINE('The result is: ' || v_result);
 
-    cnt := SQL%ROWCOUNT;
-
-    IF cnt > 0 THEN
-        DBMS_OUTPUT.PUT_LINE(cnt || ' employee(s) salary increased by 10%.');
-    ELSE
-        DBMS_OUTPUT.PUT_LINE('No employees found in department 10.');
-    END IF;
-
-    COMMIT;
+EXCEPTION
+    
+    WHEN ZERO_DIVIDE THEN
+        DBMS_OUTPUT.PUT_LINE('Error: Division by zero is mathematically undefined.');
+        DBMS_OUTPUT.PUT_LINE('System Message: ' || SQLERRM);
+        v_result := NULL;
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
 END;
 /
